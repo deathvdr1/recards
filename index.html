@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> RE | Card Database</title>
+    <title>Card Space </title>
     
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -281,16 +281,14 @@
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row items-center justify-between min-h-[5rem] py-3 md:py-0 gap-3 md:gap-0">
                     <div className="flex items-center gap-2 self-start md:self-auto">
-                    {/* Logo Removed from here */}
                     <div>
                         <h1 className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                        RE
+                        Card Space
                         </h1>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-medium">Card Database</p>
                     </div>
                     </div>
 
-                    <div className="w-full md:w-auto flex flex-wrap justify-center md:justify-end gap-2">
+                    <div className="w-full md:w-auto flex flex-wrap justify-center md:justify-end gap-2 items-center">
                     <button 
                         onClick={() => setActiveTab('all')}
                         className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'all' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-900'}`}
@@ -309,6 +307,12 @@
                     >
                         RE Special
                     </button>
+                    <img 
+                        src="logocard.jpg" 
+                        alt="Logo" 
+                        className="h-10 w-auto rounded-lg border border-slate-700/50 shadow-lg ml-2"
+                        onError={(e) => {e.target.style.display = 'none'}} 
+                    />
                     </div>
                 </div>
                 </div>
@@ -394,7 +398,7 @@
             <footer className="bg-slate-950 border-t border-slate-900 py-12">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                 <p className="text-slate-600 text-sm">
-                    © 2025 RE Cards Collection. All rights reserved.
+                    © 2024 Vibes Game Collection. All rights reserved.
                 </p>
                 </div>
             </footer>
@@ -407,6 +411,3 @@
     </script>
 </body>
 </html>
-
-
-
