@@ -24,33 +24,16 @@
         body { background-color: #020617; } /* slate-950 */
         
         /* --- ANIMATIONS --- */
-        
-        /* Crazy Rarity Glitch */
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
-        }
-        .animate-glitch {
-            animation: glitch 1s cubic-bezier(.25, .46, .45, .94) both infinite;
+
+        /* Shine Animation */
+        @keyframes shine-move {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
-        /* Haki Pulse Effect (One Piece) */
-        @keyframes haki-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); }
-            50% { box-shadow: 0 0 20px 10px rgba(88, 28, 135, 0), 0 0 40px 20px rgba(126, 34, 206, 0.5); }
-            100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); }
-        }
-        .haki-aura {
-            animation: haki-pulse 3s infinite;
-        }
-
-        /* Crazy Gradient Text */
-        .crazy-gradient {
-            background: linear-gradient(90deg, #ff00cc, #333399, #00ccff);
+        /* Golden Gradient Text for Crazy (Optional use) */
+        .gold-gradient {
+            background: linear-gradient(90deg, #FDB931, #FFFFAC, #FDB931);
             background-size: 200% 200%;
             animation: gradient-move 3s ease infinite;
         }
@@ -84,16 +67,6 @@
         const AtSign = (props) => <Icon {...props}><circle cx="12" cy="12" r="4" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94" /></Icon>;
         const Hash = (props) => <Icon {...props}><line x1="4" y1="9" x2="20" y2="9" /><line x1="4" y1="15" x2="20" y2="15" /><line x1="10" y1="3" x2="8" y2="21" /><line x1="16" y1="3" x2="14" y2="21" /></Icon>;
         
-        // Custom Straw Hat Icon for One Piece Vibes
-        const StrawHat = (props) => (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
-                <path d="M2 17h20" />
-                <path d="M2 17c0 1.657 4.477 3 10 3s10-1.343 10-3" />
-                <path d="M7 17c0-2.5 1-8 5-8s5 5.5 5 8" />
-                <path d="M7 14h10" strokeWidth="2" stroke="red" />
-            </svg>
-        );
-
         // --- DATA ---
         
         const RARITY_RANK = {
@@ -148,11 +121,15 @@
             const colors = {
                 Common: 'bg-slate-600 text-white',
                 Uncommon: 'bg-green-500 text-white',
-                Rare: 'bg-blue-500 text-white',
-                Epic: 'bg-fuchsia-500 text-white shadow-[0_0_10px_rgba(217,70,239,0.5)]',
-                Legendary: 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)]',
-                Special: 'bg-purple-600 text-white ring-2 ring-purple-300',
-                CRAZY: 'crazy-gradient text-white font-black tracking-widest uppercase border border-white/20 shadow-[0_0_15px_rgba(255,0,204,0.6)] animate-pulse'
+                // Dark Blue for Rare
+                Rare: 'bg-blue-800 text-white border border-blue-600 shadow-[0_0_10px_rgba(30,64,175,0.6)]',
+                // Pink for Epic
+                Epic: 'bg-pink-500 text-white border border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.6)]',
+                // Purple for Legendary
+                Legendary: 'bg-purple-600 text-white border border-purple-400 shadow-[0_0_15px_rgba(147,51,234,0.6)]',
+                Special: 'bg-indigo-600 text-white ring-2 ring-indigo-400',
+                // Golden for CRAZY
+                CRAZY: 'bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 text-slate-900 font-black tracking-widest uppercase border border-yellow-200 shadow-[0_0_20px_rgba(234,179,8,0.8)] animate-pulse'
             };
 
             return (
@@ -179,6 +156,13 @@
         const CardModal = ({ card, onClose }) => {
             const handleContentClick = (e) => e.stopPropagation();
 
+            // Dynamic card glow for Modal based on Rarity
+            let glowStyle = {};
+            if (card.rarity === 'CRAZY') glowStyle = { boxShadow: '0 0 40px 15px rgba(234, 179, 8, 0.6)' }; // Gold
+            else if (card.rarity === 'Legendary') glowStyle = { boxShadow: '0 0 35px 12px rgba(147, 51, 234, 0.5)' }; // Purple
+            else if (card.rarity === 'Epic') glowStyle = { boxShadow: '0 0 30px 10px rgba(236, 72, 153, 0.5)' }; // Pink
+            else if (card.rarity === 'Rare') glowStyle = { boxShadow: '0 0 25px 8px rgba(30, 64, 175, 0.6)' }; // Dark Blue
+
             return (
                 <div 
                     className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" 
@@ -190,54 +174,65 @@
                         className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-100 mx-4 max-h-[90vh] overflow-y-auto"
                         onClick={handleContentClick}
                     >
+                        {/* Video Background if available for Momo - Covers Entire Modal */}
+                        {card.id.includes('momo') && (
+                            <div className="absolute inset-0 z-0 pointer-events-none">
+                                <video 
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline 
+                                    className="w-full h-full object-cover opacity-30"
+                                >
+                                    <source src="./momo.mp4" type="video/mp4" />
+                                </video>
+                                <div className="absolute inset-0 bg-slate-900/60"></div>
+                            </div>
+                        )}
+
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 z-10 p-2 bg-black/40 hover:bg-black/60 rounded-full text-white transition-colors"
+                            className="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 rounded-full text-white transition-colors"
                         >
                             <X size={20} />
                         </button>
 
-                        {/* Modal Header Image with One Piece Haki Aura */}
-                        <div className={`h-64 md:h-80 w-full flex items-center justify-center relative overflow-hidden bg-slate-900`}>
-                            {card.imageType === 'image' ? (
-                                <img 
-                                    src={card.image} 
-                                    className={`h-[90%] w-auto object-contain rounded-lg shadow-2xl ${card.description.includes('One Piece') ? 'haki-aura' : ''}`} 
-                                    alt={card.title} 
-                                />
-                            ) : (
-                                <span className="text-8xl drop-shadow-2xl animate-pulse">{card.image}</span>
-                            )}
+                        {/* Modal Header Image */}
+                        <div className={`h-64 md:h-80 w-full flex items-center justify-center relative overflow-hidden bg-transparent z-10`}>
+                            
+                            {/* Card Image */}
+                            <div className="z-10 h-full w-full flex justify-center items-center p-4">
+                                {card.imageType === 'image' ? (
+                                    <img 
+                                        src={card.image} 
+                                        className={`h-[90%] w-auto object-contain rounded-lg transition-all duration-500`}
+                                        style={glowStyle} 
+                                        alt={card.title} 
+                                    />
+                                ) : (
+                                    <span className="text-8xl drop-shadow-2xl animate-pulse">{card.image}</span>
+                                )}
+                            </div>
                             
                             {/* Gradient Overlay for Text Readability */}
-                            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-900 to-transparent"></div>
+                            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-900 to-transparent z-10"></div>
                             
                             {/* Title overlay */}
-                            <div className="absolute bottom-4 left-4 md:left-6 z-10">
+                            <div className="absolute bottom-4 left-4 md:left-6 z-20">
                                 <h3 className="text-3xl md:text-4xl font-black text-white drop-shadow-md tracking-tight flex items-center gap-2">
                                     {card.title}
-                                    {/* Show Straw Hat if description mentions One Piece */}
-                                    {card.description.toLowerCase().includes('one piece') && (
-                                        <StrawHat className="w-8 h-8 text-yellow-400 animate-bounce" />
-                                    )}
                                 </h3>
                                 <div className="flex items-center gap-2 mt-2">
                                     <RarityBadge rarity={card.rarity} />
-                                    <span className="text-slate-300 text-xs font-semibold bg-black/50 px-2 py-0.5 rounded backdrop-blur-sm border border-white/10">{card.type}</span>
-                                    {card.extended && card.extended.attribute && (
-                                        <span className="text-indigo-300 text-xs font-semibold bg-indigo-500/20 px-2 py-0.5 rounded backdrop-blur-sm border border-indigo-500/20 uppercase tracking-wide">{card.extended.attribute}</span>
-                                    )}
+                                    {/* Removed Character and Discord text as requested */}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-4 md:p-6 space-y-6">
+                        <div className="p-4 md:p-6 space-y-6 relative z-10">
                             
                             {/* Main Description */}
-                            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <StrawHat className="w-16 h-16 rotate-12" />
-                                </div>
+                            <div className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50 relative overflow-hidden group">
                                 <p className="text-slate-300 italic text-lg leading-relaxed font-light relative z-10">
                                     "{card.description}"
                                 </p>
@@ -249,18 +244,35 @@
                                     
                                     {/* Socials & Info Grid */}
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-slate-800 p-3 rounded-lg border border-slate-700/50 flex flex-col gap-1">
-                                            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-bold tracking-wider">
+                                        <a 
+                                            href={`https://x.com/${card.extended.handles.x}`}
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700/50 flex flex-col gap-1 hover:bg-slate-700/80 transition-colors group/link cursor-pointer"
+                                        >
+                                            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-bold tracking-wider group-hover/link:text-slate-300">
                                                 <AtSign size={12} /> X (Twitter)
                                             </div>
-                                            <div className="text-slate-200 font-mono text-sm">{card.extended.handles.x}</div>
-                                        </div>
-                                        <div className="bg-slate-800 p-3 rounded-lg border border-slate-700/50 flex flex-col gap-1">
-                                            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-bold tracking-wider">
+                                            <div className="text-slate-200 font-mono text-sm truncate flex items-center justify-between">
+                                                {card.extended.handles.x}
+                                                <Icon size={12} className="opacity-0 group-hover/link:opacity-50"><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></Icon>
+                                            </div>
+                                        </a>
+                                        <a 
+                                            href="https://discord.com/app"
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700/50 flex flex-col gap-1 hover:bg-slate-700/80 transition-colors group/link cursor-pointer"
+                                            title="Open Discord Web App"
+                                        >
+                                            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-bold tracking-wider group-hover/link:text-slate-300">
                                                 <Hash size={12} /> Discord
                                             </div>
-                                            <div className="text-slate-200 font-mono text-sm">{card.extended.handles.discord}</div>
-                                        </div>
+                                            <div className="text-slate-200 font-mono text-sm truncate flex items-center justify-between">
+                                                {card.extended.handles.discord}
+                                                <Icon size={12} className="opacity-0 group-hover/link:opacity-50"><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></Icon>
+                                            </div>
+                                        </a>
                                     </div>
 
                                     {/* Roles Tags */}
@@ -268,9 +280,11 @@
                                         <h4 className="text-xs text-slate-500 uppercase font-bold tracking-widest mb-3">Roles & Titles</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {card.extended.roles.map((role, idx) => (
-                                                <span key={idx} className="px-3 py-1 bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded-full text-xs font-medium hover:bg-indigo-500/20 transition-colors cursor-default">
+                                                <div key={idx} className="px-3 py-1 bg-indigo-500/20 backdrop-blur-sm text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-medium hover:bg-indigo-500/30 transition-colors cursor-default flex items-center gap-2">
+                                                    {/* Role Icon */}
+                                                    <img src={`./${role}.png`} alt="" className="w-4 h-4 object-contain" onError={(e) => e.target.style.display='none'} />
                                                     {role}
-                                                </span>
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
@@ -278,7 +292,7 @@
                                     {/* Metrics Grid */}
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                         {card.extended.metrics.map((metric, idx) => (
-                                            <div key={idx} className="text-center p-3 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:bg-slate-800/50 transition-colors">
+                                            <div key={idx} className="text-center p-3 rounded-lg bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 hover:bg-slate-800/80 transition-colors">
                                                 <div className="text-xl font-bold text-white mb-1">{metric.value}</div>
                                                 <div className="text-[10px] text-slate-500 uppercase font-bold">{metric.label}</div>
                                             </div>
@@ -286,7 +300,7 @@
                                     </div>
 
                                     {/* Credits & Footer */}
-                                    <div className="flex justify-between items-end border-t border-slate-800 pt-4 text-xs text-slate-500">
+                                    <div className="flex justify-between items-end border-t border-slate-800/50 pt-4 text-xs text-slate-500">
                                         <div className="flex flex-col gap-1">
                                             <span>Illus. bg: <span className="text-slate-400">{card.extended.credits.bg}</span></span>
                                             <span>Illus. pfp: <span className="text-slate-400">{card.extended.credits.pfp}</span></span>
@@ -302,14 +316,14 @@
                             {/* Basic Stats Fallback */}
                             {!card.extended && (
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="bg-slate-800 p-3 rounded-lg flex items-center gap-3 border border-slate-700">
+                                    <div className="bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg flex items-center gap-3 border border-slate-700">
                                         <div className="p-2 rounded bg-rose-500/20 text-rose-400"><Zap size={20} /></div>
                                         <div>
                                             <div className="text-[10px] text-slate-400 uppercase font-bold">Hype</div>
                                             <div className="text-xl font-bold text-slate-100">{card.stats.hype}</div>
                                         </div>
                                     </div>
-                                    <div className="bg-slate-800 p-3 rounded-lg flex items-center gap-3 border border-slate-700">
+                                    <div className="bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg flex items-center gap-3 border border-slate-700">
                                         <div className="p-2 rounded bg-cyan-500/20 text-cyan-400"><Heart size={20} /></div>
                                         <div>
                                             <div className="text-[10px] text-slate-400 uppercase font-bold">Chill</div>
@@ -325,36 +339,42 @@
         };
 
         const Card = ({ data, onClick }) => {
+            // Determine Shine Color based on Rarity
+            let shineGradient = 'rgba(255, 255, 255, 0.2)'; // Default
+            if (data.rarity === 'CRAZY') shineGradient = 'rgba(255, 215, 0, 0.5)'; // Gold
+            else if (data.rarity === 'Legendary') shineGradient = 'rgba(147, 51, 234, 0.5)'; // Purple
+            else if (data.rarity === 'Epic') shineGradient = 'rgba(236, 72, 153, 0.5)'; // Pink
+
             return (
                 <div 
                     onClick={() => onClick(data)}
-                    className={`group relative h-[600px] w-full perspective-1000 cursor-pointer transition-transform duration-300 hover:scale-[1.02]`}
+                    className={`group relative h-[500px] w-full perspective-1000 cursor-pointer transition-transform duration-300 hover:scale-[1.02] flex items-center justify-center`}
                 >
-                    {/* Main Card Container - Full Image Only */}
-                    <div className={`relative w-full h-full rounded-2xl overflow-hidden shadow-xl ${data.rarity === 'CRAZY' ? 'group-hover:shadow-[0_0_40px_rgba(255,0,204,0.6)]' : 'group-hover:shadow-[0_0_30px_rgba(168,85,247,0.4)]'} border border-slate-800`}>
+                    {/* Inner Container: Fits the image width exactly */}
+                    <div className={`relative h-full w-auto rounded-2xl overflow-hidden shadow-xl border border-slate-800 bg-slate-900 ${data.rarity === 'CRAZY' ? 'group-hover:shadow-[0_0_40px_rgba(255,215,0,0.3)]' : 'group-hover:shadow-[0_0_30px_rgba(168,85,247,0.4)]'}`}>
                         
-                        {/* Full height/width image with CONTAIN to ensure full visibility */}
-                        <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
-                            {data.imageType === 'image' ? (
-                                <img 
-                                    src={data.image} 
-                                    alt={data.title} 
-                                    className="w-full h-full object-contain" 
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-slate-800 text-6xl">
-                                    {data.image}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Glitch Overlay for Crazy Rarity (Subtle on hover) */}
-                        {data.rarity === 'CRAZY' && (
-                            <div className="absolute inset-0 bg-transparent pointer-events-none mix-blend-overlay opacity-0 group-hover:opacity-40 transition-opacity duration-300 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] bg-cover" />
+                        {/* Image: Auto width to maintain aspect ratio, Full height */}
+                        {data.imageType === 'image' ? (
+                            <img 
+                                src={data.image} 
+                                alt={data.title} 
+                                className="h-full w-auto object-contain" 
+                            />
+                        ) : (
+                            <div className="h-full w-full aspect-[2/3] flex items-center justify-center bg-slate-800 text-6xl">
+                                {data.image}
+                            </div>
                         )}
 
-                        {/* Shine Effect */}
-                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 pointer-events-none bg-gradient-to-tr from-transparent via-white/10 to-transparent transition-opacity duration-300" />
+                        {/* Rarity Shine Effect */}
+                        <div 
+                            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            style={{
+                                background: `linear-gradient(110deg, transparent 30%, ${shineGradient} 50%, transparent 70%)`,
+                                backgroundSize: '200% 100%',
+                                animation: 'shine-move 1.5s infinite linear'
+                            }}
+                        />
                     </div>
                 </div>
             );
@@ -498,7 +518,7 @@
                     <footer className="bg-slate-950 border-t border-slate-900 py-12">
                         <div className="max-w-7xl mx-auto px-4 text-center">
                             <p className="text-slate-600 text-sm">
-                                © 2025 RE Cards Collection. All rights reserved.
+                                © 2024 Vibes Game Collection. All rights reserved.
                             </p>
                         </div>
                     </footer>
@@ -511,4 +531,3 @@
     </script>
 </body>
 </html>
-
